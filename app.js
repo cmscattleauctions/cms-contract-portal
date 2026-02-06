@@ -179,7 +179,7 @@ function handleCsvFile(file) {
 }
 
 // Build the PDF contract
-function buildPdfForContract({ row, side }) {
+async function buildPdfForContract({ row, side }) {
   const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
 
   const pdfDoc = await PDFDocument.create();
