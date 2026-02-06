@@ -112,6 +112,22 @@ let generated = {
   sellerContracts: [],
 };
 
+// Show the page
+function show(el) {
+  el.classList.remove("hidden");
+}
+
+// Hide the page
+function hide(el) {
+  el.classList.add("hidden");
+}
+
+// Change pages
+function goto(page) {
+  [pageAuth, pageBuilder, pageResults].forEach(hide);
+  show(page);
+}
+
 function wireDropZone({ zoneEl, inputEl, onFile, metaEl }) {
   zoneEl.addEventListener("dragover", (e) => { e.preventDefault(); zoneEl.classList.add("dragover"); });
   zoneEl.addEventListener("dragleave", () => zoneEl.classList.remove("dragover"));
@@ -133,6 +149,7 @@ function wireDropZone({ zoneEl, inputEl, onFile, metaEl }) {
   }
 }
 
+// Handle CSV file upload
 function handleCsvFile(file) {
   if (!file) return;
 
@@ -161,6 +178,7 @@ function handleCsvFile(file) {
   }
 }
 
+// Build the PDF contract
 function buildPdfForContract({ row, side }) {
   const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
 
@@ -201,8 +219,57 @@ function buildPdfForContract({ row, side }) {
 
   page.drawText(cnText, { x: cnX, y: headerY, size: cnSize, font: fontBold, color: BLACK });
 
-  // More PDF generation for the contract content here...
+  // Add more contract generation logic here...
 
   return await pdfDoc.save();
 }
 
+// Wire the authentication (PIN validation)
+function wireAuth() {
+  pinSubmit.addEventListener("click", () => {
+    const entered = safeStr(pinInput.value);
+    if (entered === CONFIG.PIN) {
+      setError(authError, "");
+      pinInput.value = "";
+      goto(pageBuilder);  // Navigate to the contract builder page
+    } else {
+      setError(authError, "Incorrect PIN.");
+    }
+  });
+
+  pinInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") pinSubmit.click();  // Allow pressing Enter to submit
+  });
+}
+
+// Set error message
+function setError(el, msg) {
+  if (!msg) { hide(el); el.textContent = ""; return; }
+  el.textContent = msg;
+  show(el);
+}
+
+// Enable the 'Generate' button when the conditions are met
+function setBuildEnabled() {
+  const anyChecked = chkBuyerContracts.checked || chkSellerContracts.checked;
+  buildBtn.disabled = !(csvRows.length > 0 && anyChecked);
+}
+
+// Initialize the app
+function init() {
+  try { bindDom(); }
+  catch (e) { console.error(e); alert(e.message); return; }
+
+  wireAuth();
+  wireDropZone({ zoneEl: dropZone, inputEl: fileInput, onFile: handleCsvFile, metaEl: fileMeta });
+
+  [chkBuyerContracts, chkSellerContracts].forEach(el => el.addEventListener("change", setBuildEnabled));
+  wireBuild();
+  wireExit();
+  wireResultsDropdowns();
+
+  goto(pageAuth);
+  setBuildEnabled();
+}
+
+document.addEventListener("DOMContentLoaded", init);
