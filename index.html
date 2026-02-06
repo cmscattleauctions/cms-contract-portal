@@ -6,8 +6,6 @@
   <title>CMS Contract Portal</title>
 
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Client-only libraries -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -15,19 +13,16 @@
 
 <body>
   <div class="app">
-    <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
         <img src="assets/logo.png" alt="CMS Livestock Auction" class="logo" />
         <div class="brandText">
           <div class="brandTitle">CMS Contract Portal</div>
-          <div class="brandSub">Internal Contract Generator</div>
+          <div class="brandSub">Internal Contract PDF Builder</div>
         </div>
       </div>
       <div class="topbarActions">
-        <button id="exitBtn" class="btn btnGhost" title="Clears all data & resets app">
-          Exit / Clear
-        </button>
+        <button id="exitBtn" class="btn btnGhost" title="Clears all data & resets app">Exit / Clear</button>
       </div>
     </header>
 
@@ -51,8 +46,8 @@
 
       <!-- PAGE 2: BUILDER -->
       <section id="pageBuilder" class="card hidden">
-        <h1>Build Contracts</h1>
-        <p class="muted">Upload a CSV and choose which contracts to generate.</p>
+        <h1>Build PDFs</h1>
+        <p class="muted">Upload a CSV and choose what you want to generate.</p>
 
         <div class="grid2">
           <div>
@@ -60,10 +55,13 @@
               <label class="label">Auction Title</label>
               <input id="auctionName" class="input" placeholder="e.g. CMS Weekly Video Auction" />
             </div>
-
             <div class="row">
-              <label class="label">Auction Date</label>
+              <label class="label">Auction Date / Time</label>
               <input id="auctionDate" class="input" placeholder="e.g. Feb 12, 2026 — 10:00 AM CT" />
+            </div>
+            <div class="row">
+              <label class="label">Optional Label</label>
+              <input id="auctionLabel" class="input" placeholder="e.g. Special Calf Sale" />
             </div>
           </div>
 
@@ -81,8 +79,8 @@
             <div class="row">
               <label class="label">What to Generate</label>
               <div class="pillRow">
-                <label class="pill"><input type="checkbox" id="chkBuyerContracts" /> Buyer Contracts</label>
-                <label class="pill"><input type="checkbox" id="chkSellerContracts" /> Seller Contracts</label>
+                <label class="pill"><input type="checkbox" id="chkBuyer" /> Buyer Contracts (one per lot)</label>
+                <label class="pill"><input type="checkbox" id="chkSellerContracts" /> Seller Contracts (one per lot)</label>
               </div>
             </div>
 
@@ -106,9 +104,12 @@
               <h3>Buyer Contracts</h3>
               <div class="resultsHeaderRight">
                 <button id="zipBuyerContracts" class="btn btnSmall btnGhost" disabled>ZIP</button>
+                <button id="togBuyerContracts" class="toggleBtn" type="button" aria-expanded="false" aria-controls="listBuyerContracts" title="Expand/Collapse">
+                  <span class="chev">▾</span>
+                </button>
               </div>
             </div>
-            <div id="listBuyerContracts" class="list"></div>
+            <div id="listBuyerContracts" class="list collapsible collapsed"></div>
           </div>
 
           <div class="resultsCol">
@@ -116,9 +117,12 @@
               <h3>Seller Contracts</h3>
               <div class="resultsHeaderRight">
                 <button id="zipSellerContracts" class="btn btnSmall btnGhost" disabled>ZIP</button>
+                <button id="togSellerContracts" class="toggleBtn" type="button" aria-expanded="false" aria-controls="listSellerContracts" title="Expand/Collapse">
+                  <span class="chev">▾</span>
+                </button>
               </div>
             </div>
-            <div id="listSellerContracts" class="list"></div>
+            <div id="listSellerContracts" class="list collapsible collapsed"></div>
           </div>
         </div>
 
@@ -138,7 +142,6 @@
     </footer>
   </div>
 
-  <!-- App -->
   <script src="app.js"></script>
 </body>
 </html>
